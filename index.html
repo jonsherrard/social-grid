@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><title>test</title></head><body><style type="text/css">.sg-instagram-picture {
+  display: block;
+  float: left;
+}
+.sg-twitter-tweet {
+  display: block;
+  float: left;
+}
+.sg-tweet-text {
+  display: block;
+  padding: 10px;
+  font-size: larger;
+}
+</style><div id="social-grid"></div><script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>'</script><script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script><script src="js/sg.js"></script><script type="text/javascript">
+(function() {
+  var cb, twitterCallback,
+    _this = this;
+
+  $(document).ready(function() {
+    var sg;
+
+    sg = new SocialGrid;
+    return sg.init(500);
+  });
+
+  twitterCallback = function() {
+    return alert('yello');
+  };
+
+  cb = function(response) {
+    response = JSON.parse(response);
+    return console.log(response);
+  };
+
+}).call(this);
+</script></body></html>

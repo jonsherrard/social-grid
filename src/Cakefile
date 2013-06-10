@@ -1,0 +1,47 @@
+{exec} = require 'child_process'
+log = console.log
+fs = require 'fs'
+
+task 'build:index', 'build index page', ->
+	exec 'jade -O ../ ./jade/index.jade', (err, stdout, stderr) ->
+		err && log err
+		log 'Built Jade OK!'
+
+task 'build:stylus', 'build style.css from src/styl', ->
+	exec 'stylus -c -u nib -o ../css/ ./styl/', (err, stdout, stderr) ->
+		err && throw err
+		stylus_ready = true
+		log 'Build Stylus OK!'
+
+task 'build:jade', 'build src/html from src/jade', ->
+	exec 'jade -O src/html/ ./jade/templates/*', (err, stdout, stderr) ->
+		err && throw err
+		log 'Build Jade OK!'
+		invoke 'build:handlebars'
+
+task 'build:handlebars', 'build www/js/templates.js from src/html', ->
+	exec 'handlebars src/html/* -f ../js/templates.js', (err, stdout, stderr) ->
+		err && throw err
+		exec 'find src/html/*', (err, stdout, stderr) ->
+			files = stdout.split '\n'
+			remain = files.length
+			for file, i in files then do (file, i) ->
+				fs.unlink file, (err) ->
+					finish() if --remain is 0
+			finish = ->
+				fs.rmdir 'src/html', (err) ->
+					jade_ready = true
+					log 'Build Handlebars OK!', 'green'
+
+task 'browserify', 'browserify the shiz', ->
+	exec 'browserify ../js/base.js > ../js/sg.js', (err, stdout, stderr) ->
+		err && throw err
+		log 'Browserified ok!'
+
+
+task 'build:coffee', 'build src/client.js file from source files', (options) ->
+	exec 'coffee -c -o ../js ./client/base.coffee', (err, stdout, stderr) ->
+		err && throw err
+		log 'Build Coffee OK!'
+		invoke 'browserify'
+
